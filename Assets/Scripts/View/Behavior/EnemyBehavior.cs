@@ -12,21 +12,51 @@ public class EnemyBehavior : MonoBehaviour {
     private HealthComponent healthComponent;
     [SerializeField]
     private AudioClip hurtclip;      //開放讓外部可以指定音樂
+    [SerializeField]
+    private AudioClip deadclip;      //開放讓外部可以指定音樂
+
+    public EnemyData enemyData;
+
+    public bool IsDead
+    {
+        get
+        {
+            return healthComponent.IsOver;
+        }
+    }
 
     private void Awake() {                             //只要繼承MonoBehavior 就不用建構子 用Awake()
         animator = GetComponent<Animator>();
         meshFader = GetComponent<MeshFader>();
         audioSource = GetComponent<AudioSource>();
-        healthComponent = GetComponent<HealthComponent>();
+        healthComponent = GetComponent<HealthComponent>();        
     }
 
 
     private void OnEnable()
     {
         StartCoroutine(meshFader.FadeIn());
-        healthComponent.Init(100);      
     }
-
+    //-----------------------------------------測試
+    [ContextMenu("Test Execute")]
+    private void TestExecute()
+    {
+        StartCoroutine(Execute(enemyData));
+    }
+    //-----------------------------------------
+    public IEnumerator Execute(EnemyData enemtData)
+    {
+        healthComponent.Init(enemyData.health);
+        while (IsDead == false)
+        {
+            yield return null;
+        }
+        animator.SetTrigger("die");
+        audioSource.clip = deadclip;
+        audioSource.Play();
+        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
+        yield return StartCoroutine(meshFader.FadeOut());
+    }
     public void DoDamage(int attack)
     {
         animator.SetTrigger("hurt");
