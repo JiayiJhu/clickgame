@@ -50,7 +50,7 @@ public class MeshFader : MonoBehaviour
         }
     }
 
-    private void ChangeAlpha(float alpha)   //都會用到 所以可以另外提出來寫 讓其他的呼叫就好
+    private void ChangeAlpha(float alpha)   //都會用到 所以可以另外提出來寫 讓其他的呼叫ChangeAlpha(alpha);就好 
     {
         for (int i = 0; i < fadeRenderers.Length; i++)
         {
